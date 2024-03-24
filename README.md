@@ -83,6 +83,25 @@ The script provides several configurable options that you can modify according t
 
 You can modify these options directly in the script file (`internet_monitor.sh`) according to your requirements.
 
+## Enabling at Startup
+
+To ensure the service starts automatically upon system reboot, you can add a crontab entry. This setup enables the internet-monitor service without manual intervention every time your system starts.
+
+Follow these steps to set up automatic startup:
+
+1. Open your crontab file for editing by running the command: `crontab -e`
+2. Add the following line to the crontab file:
+
+```
+@reboot /usr/bin/screen -dmS internet_monitor ~/internet_monitor.sh
+```
+
+This line uses `@reboot`, which executes the specified command once, right after the system boots up. Adjust the path `~/internet_monitor.sh` if your script is located elsewhere or named differently.
+
+3. Save and close the crontab file. The changes will take effect at the next system startup.
+
+By following these steps, your system will automatically enable the internet-monitor service each time it boots, ensuring continuous protection and privacy for your internet connectivity.
+
 ## Logging
 
 The script logs its output to a file specified by the `log_file` variable (default: `/var/log/internet_monitor.log`). Each log entry includes a timestamp and a description of the event.
