@@ -72,7 +72,7 @@ check_internet() {
     local consecutive_ping_failures=0
     local consecutive_dns_failures=0
     local required_ping_failures=10
-    local required_dns_failures=1
+    local required_dns_failures=10
 
     for (( i=0; i<required_ping_failures || i<required_dns_failures; i++ )); do
         # Check ping connectivity
@@ -97,7 +97,7 @@ check_internet() {
             consecutive_ping_failures=0
         fi
 
-        if [ $failed_dns_count -ge ${#dns_targets[@]} ]; then
+        if [ $failed_dns_count -ge 1 ]; then
             ((consecutive_dns_failures++))
             failed_dns_count=0
         else
@@ -123,6 +123,8 @@ check_internet() {
 
 # Main script
 log "Starting internet connectivity monitor..."
+restart_services
+sleep 60
 
 while true; do
     log "Checking internet connectivity..."
@@ -137,9 +139,11 @@ while true; do
         done
         log "Internet has recovered. Restarting v2raya and dnsmasq services..."
         restart_services
+        sleep 60
     elif [ $result -eq 2 ]; then
         log "DNS resolution failed. Restarting v2raya and dnsmasq services..."
         restart_services
+        sleep 60
     else
         log "Internet is up. Continuing to monitor..."
     fi
