@@ -72,7 +72,7 @@ check_internet() {
     local consecutive_ping_failures=0
     local consecutive_dns_failures=0
     local required_ping_failures=10
-    local required_dns_failures=5
+    local required_dns_failures=1
 
     for (( i=0; i<required_ping_failures || i<required_dns_failures; i++ )); do
         # Check ping connectivity
@@ -86,6 +86,7 @@ check_internet() {
         for target in "${dns_targets[@]}"; do
             if ! timeout $dns_timeout dig $target >/dev/null 2>&1; then
                 ((failed_dns_count++))
+                log "failed dns count $failed_dns_count"
             fi
         done
 
@@ -96,7 +97,7 @@ check_internet() {
             consecutive_ping_failures=0
         fi
 
-        if [ $failed_dns_count -eq ${#dns_targets[@]} ]; then
+        if [ $failed_dns_count -ge ${#dns_targets[@]} ]; then
             ((consecutive_dns_failures++))
             failed_dns_count=0
         else
