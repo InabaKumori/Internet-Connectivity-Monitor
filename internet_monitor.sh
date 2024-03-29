@@ -28,6 +28,21 @@ restart_services() {
     os=$(determine_os)
     case $os in
         "openwrt")
+            #Uncomment the following for advanced DoH setups routed via v2rayA
+            # log "Restarting https-dns-proxy service on OpenWrt..."
+            # /etc/init.d/https-dns-proxy restart
+            # sleep 5 
+
+            # log "Restarting dnsmasq service on OpenWrt..."
+            # /etc/init.d/dnsmasq restart
+            # sleep 5 
+
+            # log "Restarting v2raya service on OpenWrt..."
+            # /etc/init.d/v2raya restart                                             
+            # sleep 5
+
+
+            
             log "Restarting v2raya service on OpenWrt..."
             /etc/init.d/v2raya restart
             sleep 2
@@ -35,6 +50,41 @@ restart_services() {
             /etc/init.d/dnsmasq restart
             ;;
         "debian")
+            #Uncomment the following for advanced DoH setups routed via v2rayA
+            # log "Closing existing sessions"
+            # echo "2" | ~/dohX.sh
+            # sleep 5
+            # log "Stoping both dnsmasq and v2raya services"
+            # systemctl stop dnsmasq
+            # leep 5
+            # systemctl stop v2raya
+            # sleep 5
+            # log "Enabling https-dns-proxy-direct"
+            # echo "7" | ~/dohX.sh
+            # sleep 3
+            # log "Restarting dnsmasq service on Debian/Ubuntu..."
+            # systemctl restart dnsmasq
+            # sleep 5
+            # dig @127.0.0.1 -p 5056 google.com
+            # dig @127.0.0.1 -p 5055 google.com
+            # log "Restarting v2raya service on Debian/Ubuntu..."
+            # systemctl restart v2raya
+            # sleep 10
+            # log "Enabling https-dns-proxy"
+            # echo "6" | ~/dohX.sh
+            # sleep 5
+            # log "Restarting dnsmasq service on Debian/Ubuntu..."
+            # systemctl restart dnsmasq
+            # sleep 5
+            # dig @127.0.0.1 -p 5056 google.com
+            # sleep 5
+            # dig @127.0.0.1 -p 5055 google.com
+            # sleep 5
+            # dig @127.0.0.1 -p 5054 google.com
+            # sleep 5
+            # dig @127.0.0.1 -p 5053 google.com
+
+            #Normal Procedure for simple setups
             log "Restarting v2raya service on Debian/Ubuntu..."
             systemctl restart v2raya
             sleep 2
@@ -97,7 +147,7 @@ check_internet() {
             consecutive_ping_failures=0
         fi
 
-        if [ $failed_dns_count -ge 1 ]; then
+        if [ $failed_dns_count -eq ${#ping_targets[@]} ]; then
             ((consecutive_dns_failures++))
             failed_dns_count=0
         else
@@ -123,8 +173,16 @@ check_internet() {
 
 # Main script
 log "Starting internet connectivity monitor..."
-restart_services
-sleep 60
+#openwrt (optional)
+# sleep 5
+# restart_services
+# sleep 30
+
+#ubuntu/debian (optional)
+# restart_services
+# sleep 30
+
+sleep 5
 
 while true; do
     log "Checking internet connectivity..."
